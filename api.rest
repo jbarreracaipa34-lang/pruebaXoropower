@@ -1,0 +1,101 @@
+@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMzQ1YmFjMC00MjkwLTQyYzctYTU1Mi1lNGI0OGJlYmNlMmIiLCJlbWFpbCI6Imp1YW5AeG9yb3Bvd2VyLmFwcCIsImV4cCI6MTc4MDE3MjA2NX0.IV8rSsgPw4H_jWyf0nqyW1dYiBITPQGIfCiiwgrWdEI
+@ID_MODULO = 1c269621-d51b-4589-9727-0c4ad53715da
+
+# ── AUTENTICACIÓN ─────────────────────────────────────────────
+
+### [1] Registro de nuevo usuario
+POST http://localhost:8080/api/autenticacion/registro
+Content-Type: application/json
+
+{
+  "nombre_usuario": "Juan Perez",
+  "email":          "juan@xoropower.app",
+  "password":       "xoropower123"
+}
+
+###
+
+### [2] Inicio de Sesión
+POST http://localhost:8080/api/autenticacion/login
+Content-Type: application/json
+
+{
+  "email":    "juan@xoropower.app",
+  "password": "xoropower123"
+}
+
+###
+
+### [3] Cerrar Sesión
+POST http://localhost:8080/api/autenticacion/cerrar-sesion
+Authorization: Bearer {{TOKEN}}
+
+###
+
+# ── MÓDULOS ───────────────────────────────────────────────────
+
+### [4] Listar todos los módulos
+GET http://localhost:8080/api/modulos
+
+### Ver detalle del módulo de Ritmo
+GET http://localhost:8080/api/modulos/1c269621-d51b-4589-9727-0c4ad53715da
+Authorization: Bearer {{TOKEN}}
+
+###
+
+# ── RITMO ─────────────────────────────────────────────────────
+
+### [4b] Listar ejercicios de ritmo
+GET http://localhost:8080/api/ejercicios-ritmo
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [4c] Detalle del ejercicio de ritmo
+GET http://localhost:8080/api/ejercicios-ritmo/7ab3c673-201a-45b6-85a3-e1c813b8fef4
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [5] Detalle de módulo
+GET http://localhost:8080/api/modulos/{{ID_MODULO}}
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [6] Sección por nivel - Básico
+GET http://localhost:8080/api/modulos/{{ID_MODULO}}/seleccionador/basico
+Authorization: Bearer {{TOKEN}}
+
+###
+
+# ── PROGRESO ───────────────────────────────────────────────────
+
+### [7] Listar mi progreso
+GET http://localhost:8080/api/progreso
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [8] Resumen de estadísticas
+GET http://localhost:8080/api/progreso/resumen
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [9] Guardar progreso (EJEMPLO)
+POST http://localhost:8080/api/progreso
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "id_ejercicio": "00000000-0000-0000-0000-000000000001",
+  "puntuacion": 85
+}
+
+###
+
+# ── HEALTH ─────────────────────────────────────────────────────
+
+### [10] Health check
+GET http://localhost:8080/health
