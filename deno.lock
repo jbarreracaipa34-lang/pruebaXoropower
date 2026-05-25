@@ -4,10 +4,12 @@
     "jsr:@oak/commons@0.6": "0.6.1",
     "jsr:@oak/oak@13": "13.2.5",
     "jsr:@std/assert@0.215": "0.215.0",
+    "jsr:@std/assert@1": "1.0.19",
     "jsr:@std/bytes@0.215": "0.215.0",
     "jsr:@std/crypto@0.215": "0.215.0",
     "jsr:@std/encoding@0.215": "0.215.0",
     "jsr:@std/http@0.215": "0.215.0",
+    "jsr:@std/internal@^1.0.12": "1.0.13",
     "jsr:@std/io@0.215": "0.215.0",
     "jsr:@std/media-types@0.215": "0.215.0",
     "jsr:@std/path@0.215": "0.215.0",
@@ -25,7 +27,7 @@
     "@oak/commons@0.6.1": {
       "integrity": "c5455d45966d61e11a7a241503ee9b770e0c527f1951edd2a565eff531b8070d",
       "dependencies": [
-        "jsr:@std/assert",
+        "jsr:@std/assert@0.215",
         "jsr:@std/encoding",
         "jsr:@std/media-types"
       ]
@@ -34,7 +36,7 @@
       "integrity": "1f2064eb013dc000ea5f63be9c0e01b680a4f4e8b6a8f77d248f54ab7e13f6fe",
       "dependencies": [
         "jsr:@oak/commons",
-        "jsr:@std/assert",
+        "jsr:@std/assert@0.215",
         "jsr:@std/bytes",
         "jsr:@std/crypto",
         "jsr:@std/encoding",
@@ -48,13 +50,19 @@
     "@std/assert@0.215.0": {
       "integrity": "4d80a5b5f1aef916131e3b5dcf8cfdad397affe87da7fa6398d8088e146d1e48"
     },
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
     "@std/bytes@0.215.0": {
       "integrity": "fcb88b7a4e6e0e3b4798436bc8171f8f8d4ddbaa195a09c945d1c38279d2a66b"
     },
     "@std/crypto@0.215.0": {
       "integrity": "9cc31bd9edf639130e100c1fb6b45b0506d050d3e18fdd08785a27e700980913",
       "dependencies": [
-        "jsr:@std/assert",
+        "jsr:@std/assert@0.215",
         "jsr:@std/encoding"
       ]
     },
@@ -64,9 +72,12 @@
     "@std/http@0.215.0": {
       "integrity": "697df4ba414b3a983459fd625d415978848c10136c5d8d1cd91e1b2c50d0f3af",
       "dependencies": [
-        "jsr:@std/assert",
+        "jsr:@std/assert@0.215",
         "jsr:@std/encoding"
       ]
+    },
+    "@std/internal@1.0.13": {
+      "integrity": "2f9546691d4ac2d32859c82dff284aaeac980ddeca38430d07941e7e288725c0"
     },
     "@std/io@0.215.0": {
       "integrity": "fbd42006510b7c35657ad5ba11704db2b8fb2ce705b698b435ce801e78c00c33",
@@ -80,7 +91,7 @@
     "@std/path@0.215.0": {
       "integrity": "b790874b1abfed43a6e559d436fe87786c1c26b4338c2afe9c76c81ae7b532bc",
       "dependencies": [
-        "jsr:@std/assert"
+        "jsr:@std/assert@0.215"
       ]
     },
     "@supabase/functions-js@0.0.0-jsr-test.1": {
@@ -250,11 +261,14 @@
     "https://deno.land/x/zod@v3.24.1/index.ts": "d27aabd973613985574bc31f39e45cb5d856aa122ef094a9f38a463b8ef1a268",
     "https://deno.land/x/zod@v3.24.1/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
     "https://deno.land/x/zod@v3.24.1/mod.ts": "ec6e2b1255c1a350b80188f97bd0a6bac45801bb46fc48f50b9763aa66046039",
+    "https://deno.land/x/zod@v3.24.1/standard-schema.ts": "4abb2e7bd784fb95d219584673971bb317e74fb4fd0c74c196b558ba46df4456",
     "https://deno.land/x/zod@v3.24.1/types.ts": "ed67267a459b6e0d3ceb904072d222c58eda6a6f03f85cae3fba8d1188ce809e"
   },
   "workspace": {
     "dependencies": [
       "jsr:@oak/oak@13",
+      "jsr:@std/assert@1",
+      "jsr:@std/testing@1",
       "npm:bcryptjs@2",
       "npm:postgres@3"
     ]

@@ -46,7 +46,7 @@ export class ModuloModel {
       console.error("Error en sincronización inicial:", e);
     }
     
-    setInterval(async () => {
+    const timer = setInterval(async () => {
       try {
         await this.SincronizarCache();
         console.log("✅ Cache de módulos actualizado.");
@@ -54,6 +54,13 @@ export class ModuloModel {
         console.error("❌ Error al refrescar cache de módulos:", e);
       }
     }, ModuloModel.REFRESCO_MS);
+
+    // Evita que el temporizador mantenga activo el bucle de eventos (event loop) en Deno en los tests
+    if (typeof (timer as any).unref === "function") {
+      (timer as any).unref();
+    } else if (typeof Deno !== "undefined" && typeof Deno.unrefTimer === "function") {
+      Deno.unrefTimer(timer as any);
+    }
   }
 
   public async SincronizarCache() {

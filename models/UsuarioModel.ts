@@ -26,10 +26,10 @@ export class UsuarioModel {
     // Si no, devolvemos el vaquero por defecto 🤠
     const [usuario] = await sql`
       SELECT 
-        u.id_usuario, 
+        u.id_usuario as "idUsuario",
         u.email, 
-        u.nombre_usuario, 
-        u.password_hash,
+        u.nombre_usuario as "nombreUsuario",
+        u.password_hash as "passwordHash",
         COALESCE(a.url_imagen, '🤠') as avatar
       FROM usuarios u
       LEFT JOIN avatares a ON u.nombre_usuario = a.nombre
@@ -49,7 +49,7 @@ export class UsuarioModel {
       const [usuario] = await sql`
         INSERT INTO usuarios (nombre_usuario, email, password_hash, timestamp_ultimo_acceso)
         VALUES (${nombreUsuario}, ${email}, ${passwordHash}, NOW())
-        RETURNING id_usuario, nombre_usuario, email
+        RETURNING id_usuario as "idUsuario", nombre_usuario as "nombreUsuario", email
       `;
 
       if (usuario) {
