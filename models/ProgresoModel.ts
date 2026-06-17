@@ -1,4 +1,5 @@
 import { sql } from "./Conexion.ts";
+import { RachaModel } from "./RachaModel.ts";
 
 export type EstadoProgreso = "no_iniciado" | "en_progreso" | "completado";
 
@@ -23,37 +24,49 @@ export interface ProgresoResumen {
 }
 
 export class ProgresoModel {
+  private static cache = new Map<string, { data: ProgresoData[]; timestamp: number }>();
+  private static REFRESCO_MS = 5 * 60 * 1000; // 5 minutos de cache
+
+  private async getOrFetchProgreso(idUsuario: string): Promise<ProgresoData[]> {
+    const ahora = Date.now();
+    const cached = ProgresoModel.cache.get(idUsuario);
+
+    if (cached && (ahora - cached.timestamp < ProgresoModel.REFRESCO_MS)) {
+      return cached.data;
+    }
+
+    const result = await sql`
+      SELECT *
+      FROM progreso_usuario
+      WHERE id_usuario = ${idUsuario}
+      ORDER BY timestamp_ultimo_intento DESC NULLS LAST
+    `;
+    const data = result as unknown as ProgresoData[];
+    ProgresoModel.cache.set(idUsuario, { data, timestamp: ahora });
+    console.log("Cache de progreso actualizado.");
+    return data;
+  }
 
   public async ListarProgreso(idUsuario: string): Promise<ProgresoData[]> {
     try {
-      const result = await sql`
-        SELECT *
-        FROM progreso_usuario
-        WHERE id_usuario = ${idUsuario}
-        ORDER BY timestamp_ultimo_intento DESC NULLS LAST
-      `;
-      return result as unknown as ProgresoData[];
+      return await this.getOrFetchProgreso(idUsuario);
     } catch (error) {
       console.error("Error al listar progreso:", error);
       throw new Error("No se pudo obtener el progreso.");
     }
   }
 
-  // Obtiene el resumen estadístico del usuario.
+  // Recupera el resumen estadístico del progreso acumulado por el usuario.
   public async ObtenerResumen(idUsuario: string): Promise<ProgresoResumen> {
     try {
-      const [stats] = await sql`
-        SELECT
-          COUNT(*) FILTER (WHERE completado = true)  AS completadas,
-          COUNT(*) FILTER (WHERE completado = false) AS en_progreso,
-          COUNT(*)                                    AS total
-        FROM progreso_usuario
-        WHERE id_usuario = ${idUsuario}
-      `;
+      const data = await this.getOrFetchProgreso(idUsuario);
+      const completadas = data.filter(p => p.completado === true).length;
+      const enProgreso = data.filter(p => p.completado === false).length;
+      const total = data.length;
       return {
-        completadas: Number(stats.completadas || 0),
-        enProgreso: Number(stats.en_progreso || 0),
-        total: Number(stats.total || 0)
+        completadas,
+        enProgreso,
+        total
       };
     } catch (error) {
       console.error("Error al obtener resumen:", error);
@@ -61,14 +74,14 @@ export class ProgresoModel {
     }
   }
 
-  // Inserta o actualiza el progreso de un ejercicio.
+  // Registra o actualiza el progreso obtenido por un usuario en un ejercicio específico.
   public async ActualizarProgreso(
     idUsuario: string,
     idEjercicio: string,
     puntuacion: number
   ): Promise<{ success: boolean; message: string; progreso?: Record<string, unknown> }> {
     try {
-      const completado = puntuacion >= 70; // Aprobado con 70%
+      const completado = puntuacion >= 70; // Se considera aprobado si la puntuación alcanza o supera el 70%.
 
       const [progreso] = await sql`
         INSERT INTO progreso_usuario
@@ -89,6 +102,16 @@ export class ProgresoModel {
           END
         RETURNING *
       `;
+
+      // Registrar racha/actividad del usuario al actualizar el progreso
+      try {
+        await RachaModel.RegistrarActividad(idUsuario);
+      } catch (rachaError) {
+        console.error("Error al actualizar racha en progreso:", rachaError);
+      }
+
+      // Invalida el caché del usuario para asegurar que las lecturas posteriores obtengan los datos nuevos.
+      ProgresoModel.cache.delete(idUsuario);
 
       return {
         success: true,

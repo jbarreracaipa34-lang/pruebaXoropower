@@ -14,7 +14,7 @@ Deno.test({
     server = await startTestServer();
     const baseUrl = server.baseUrl;
 
-    // Generar un token válido temporal para las rutas protegidas
+    // Se genera un token de acceso válido y temporal para autorizar las peticiones a rutas protegidas.
     const env = await load();
     const JWT_SECRET = env["JWT_SECRET"] || Deno.env.get("JWT_SECRET") || "secret";
     const key = await crypto.subtle.importKey(
@@ -46,7 +46,7 @@ Deno.test({
     });
 
     await t.step("GET /api/modulos/:id - Detalle de un módulo (si existe)", async () => {
-      if (!primerModuloId) return; // Si BD vacía, saltar
+      if (!primerModuloId) return; // Si la base de datos se encuentra vacía, se omite el paso de prueba.
       
       const res = await fetchJson(`${baseUrl}/api/modulos/${primerModuloId}`, {
         headers: { "Authorization": `Bearer ${validToken}` }
@@ -67,13 +67,13 @@ Deno.test({
     });
 
     await t.step("GET /api/modulos/:id/seleccionador/:nivel - Nivel básico", async () => {
-      if (!primerModuloId) return; // Si BD vacía, saltar
+      if (!primerModuloId) return; // Si la base de datos se encuentra vacía, se omite el paso de prueba.
       
       const res = await fetchJson(`${baseUrl}/api/modulos/${primerModuloId}/seleccionador/basico`, {
         headers: { "Authorization": `Bearer ${validToken}` }
       });
       
-      // Podría ser 200 o 404 dependiendo de los datos, validamos la estructura general
+      // La respuesta puede retornar un código de estado 200 o 404 de acuerdo con la existencia de los datos; se procede a validar la estructura general.
       if (res.status === 200) {
         const body = res.body as any;
         assertEquals(body.success, true);

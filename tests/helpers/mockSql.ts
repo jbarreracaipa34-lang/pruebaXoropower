@@ -1,16 +1,16 @@
 /**
- * mockSql.ts — Helper de testing
+ * mockSql.ts — Componente auxiliar para pruebas (testing)
  * 
- * En esta iteración de las pruebas, decidimos usar la base de datos real
- * para pruebas integradas (Unitarias Integradas). 
+ * En la iteración actual de pruebas, se determinó utilizar la base de datos real
+ * para la ejecución de pruebas integradas. 
  * 
- * Sin embargo, este archivo queda como plantilla por si en el futuro
- * se desea aislar completamente los Unit Tests de los Modelos mockeando
- * el tagged template string `sql` de postgres.
+ * Este archivo permanece como una plantilla técnica en caso de requerir
+ * el aislamiento completo de las pruebas unitarias de los modelos, permitiendo
+ * simular el comportamiento del tagged template string `sql` de postgres.
  */
 
 export const mockSql = (strings: TemplateStringsArray, ...values: any[]) => {
-  // Simulador básico de respuesta de consulta SQL
+  // Simulador básico de respuesta para consultas estructuradas SQL.
   console.log("Mock SQL llamado con:", strings, values);
   return Promise.resolve([]);
 };

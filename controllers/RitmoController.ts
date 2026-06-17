@@ -3,7 +3,7 @@ import { RitmoModel } from "../models/RitmoModel.ts";
 
 const model = new RitmoModel();
 
-// GET /api/ejercicios-ritmo — Listar ejercicios
+// Ruta GET /api/ejercicios-ritmo: Recupera el listado completo de los ejercicios de ritmo disponibles.
 export const getEjerciciosRitmo = async (ctx: Context) => {
   const { response } = ctx;
   try {
@@ -16,7 +16,7 @@ export const getEjerciciosRitmo = async (ctx: Context) => {
   }
 };
 
-// GET /api/ejercicios-ritmo/:id — Detalle del ejercicio
+// Ruta GET /api/ejercicios-ritmo/:id: Recupera los detalles y la secuencia de notas de un ejercicio de ritmo mediante su identificador.
 export const getEjercicioRitmoDetalle = async (
   ctx: RouterContext<"/api/ejercicios-ritmo/:id">
 ) => {
@@ -44,5 +44,55 @@ export const getEjercicioRitmoDetalle = async (
   } catch (error) {
     response.status = 500;
     response.body = { success: false, message: "Error al obtener el detalle del ejercicio." };
+  }
+};
+
+// Ruta POST /api/ejercicios-ritmo: Permite al administrador crear un nuevo ejercicio de ritmo.
+export const postCrearEjercicio = async (ctx: Context) => {
+  const { response, request } = ctx;
+  try {
+    const body = await request.body.json();
+    const { titulo, descripcion, nivel, tempoBpm, secuenciaNotas, videoUrl, videoBase64, videoExtension, pasoAPaso } = body;
+
+    if (!titulo || !descripcion || !nivel || !tempoBpm || !secuenciaNotas) {
+      response.status = 400;
+      response.body = { success: false, message: "Faltan campos obligatorios: titulo, descripcion, nivel, tempoBpm, secuenciaNotas." };
+      return;
+    }
+
+    const nivelesValidos = ["basico", "intermedio", "avanzado"];
+    if (!nivelesValidos.includes(nivel)) {
+      response.status = 400;
+      response.body = { success: false, message: "Nivel inválido. Use: basico, intermedio o avanzado." };
+      return;
+    }
+
+    // Procesar video: priorizar archivo local sobre URL externa
+    let videoUrlFinal = videoUrl;
+    if (videoBase64 && videoExtension) {
+      // Generar nombre único para el video local
+      const timestamp = Date.now();
+      const videoFileName = `video_${timestamp}.${videoExtension}`;
+      // En un sistema real, aquí se guardaría el archivo en un servidor de almacenamiento
+      // Por ahora, usamos un data URI para simular el almacenamiento
+      videoUrlFinal = `data:video/${videoExtension};base64,${videoBase64}`;
+    }
+
+    const ejercicio = await model.CrearEjercicio({
+      titulo,
+      descripcion,
+      nivel,
+      tempoBpm,
+      secuenciaNotas,
+      videoUrl: videoUrlFinal,
+      pasoAPaso,
+    });
+
+    response.status = 201;
+    response.body = { success: true, message: "Ejercicio creado exitosamente.", data: ejercicio };
+  } catch (error) {
+    console.error("Error en postCrearEjercicio:", error);
+    response.status = 500;
+    response.body = { success: false, message: "Error al crear el ejercicio." };
   }
 };

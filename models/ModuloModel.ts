@@ -23,17 +23,17 @@ export interface ActividadData {
   tipo:         string;
   titulo:       string;
   textoCuerpo:  string | null;
-  urlVideo:     string | null; // Reservado para uso futuro (admin panel)
+  urlVideo:     string | null; // Atributo reservado para uso futuro (panel de administración)
   orden:        number;
 }
 
 export class ModuloModel {
   private static cacheModulos: ModuloData[] | null = null;
   private static ultimaActualizacion: number = 0;
-  private static REFRESCO_MS = 5 * 60 * 1000; // 5 minutos
+  private static REFRESCO_MS = 5 * 60 * 1000; // Intervalo de tiempo definido en 5 minutos para la sincronización.
 
   constructor() {
-    // Iniciamos el ciclo de refresco si es la primera vez
+    // Se inicia el ciclo de actualización periódica si se trata de la primera instancia.
     if (ModuloModel.ultimaActualizacion === 0) {
       this.RefrescarCachePeriodicamente();
     }
@@ -49,13 +49,13 @@ export class ModuloModel {
     const timer = setInterval(async () => {
       try {
         await this.SincronizarCache();
-        console.log("✅ Cache de módulos actualizado.");
+        console.log("Cache de módulos actualizado.");
       } catch (e) {
-        console.error("❌ Error al refrescar cache de módulos:", e);
+        console.error("Error al refrescar cache de módulos:", e);
       }
     }, ModuloModel.REFRESCO_MS);
 
-    // Evita que el temporizador mantenga activo el bucle de eventos (event loop) en Deno en los tests
+    // Se evita que el temporizador mantenga activo el bucle de eventos (event loop) de Deno en los entornos de pruebas.
     if (typeof (timer as any).unref === "function") {
       (timer as any).unref();
     } else if (typeof Deno !== "undefined" && typeof Deno.unrefTimer === "function") {
@@ -73,7 +73,7 @@ export class ModuloModel {
     ModuloModel.ultimaActualizacion = Date.now();
   }
 
-  // Lista todos los módulos (usando cache si está disponible)
+  // Obtiene el listado de todos los módulos, utilizando el almacenamiento en caché en caso de estar disponible.
   public async ListarModulos(): Promise<ModuloData[]> {
     if (ModuloModel.cacheModulos) {
       return ModuloModel.cacheModulos;
@@ -98,7 +98,7 @@ export class ModuloModel {
     }
   }
 
-  // Obtiene una sección por módulo e identificador de nivel.
+  // Recupera una sección específica en función del identificador del módulo y el nivel de dificultad.
   public async ObtenerSeccionPorNivel(moduloId: string, nivel: string): Promise<(SeccionData & { actividades: ActividadData[] }) | null> {
     try {
       const [seccion] = await sql`

@@ -7,7 +7,7 @@ const nivelSchema = z.enum(["basico", "intermedio", "avanzado"], {
 });
 
 
-// GET /api/modulos — Listar todos los módulos
+// Ruta GET /api/modulos: Obtiene la lista completa de todos los módulos disponibles.
 export const getModulos = async (ctx: Context) => {
   const { response } = ctx;
   try {
@@ -20,7 +20,7 @@ export const getModulos = async (ctx: Context) => {
       return;
     }
 
-    // Mapear a formato que espera el frontend Android
+    // Se realiza el mapeo de los módulos obtenidos al formato de datos requerido por el frontend Android.
     const data = modulos.map((m) => ({
       id: m.idModulo,
       titulo: m.titulo,
@@ -37,7 +37,7 @@ export const getModulos = async (ctx: Context) => {
   }
 };
 
-// GET /api/modulos/:identificador — Detalle de un módulo
+// Ruta GET /api/modulos/:identificador: Recupera la información detallada de un módulo específico a partir de su identificador único.
 export const getModuloPorIdentificador = async (
   ctx: RouterContext<"/api/modulos/:identificador">
 ) => {
@@ -74,7 +74,7 @@ export const getModuloPorIdentificador = async (
   }
 };
 
-// GET /api/modulos/:identificador/seleccionador/:nivel
+// Ruta GET /api/modulos/:identificador/seleccionador/:nivel: Obtiene una sección específica filtrada por módulo y nivel de dificultad.
 export const getSeccionPorNivel = async (
   ctx: RouterContext<"/api/modulos/:identificador/seleccionador/:nivel">
 ) => {
@@ -98,7 +98,7 @@ export const getSeccionPorNivel = async (
       return;
     }
 
-    // Mapear a formato del frontend
+    // Se realiza el mapeo de la sección y sus actividades al formato requerido por la interfaz de usuario.
     response.status = 200;
     response.body = {
       success: true,

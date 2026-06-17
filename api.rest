@@ -32,6 +32,17 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 
+### [3b] Promover usuario a admin (solo admin autenticado)
+POST http://localhost:8080/api/autenticacion/promover-admin
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "email": "juan@xoropower.app"
+}
+
+###
+
 # ── MÓDULOS ───────────────────────────────────────────────────
 
 ### [4] Listar todos los módulos
@@ -95,7 +106,41 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 
+# ── GAMIFICACIÓN ───────────────────────────────────────────────
+
+### [10] Obtener racha del usuario
+GET http://localhost:8080/api/gamificacion/racha/0345bac0-4290-42c7-a552-e4b48bebce2b
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### [11] Obtener historial de precisión
+GET http://localhost:8080/api/gamificacion/historial/0345bac0-4290-42c7-a552-e4b48bebce2b
+Authorization: Bearer {{TOKEN}}
+
+###
+
+# ── ANÁLISIS DE AUDIO (IA) ─────────────────────────────────────
+
+### [12] Analizar audio con Gemini
+POST http://localhost:8080/api/analisis/audio
+Authorization: Bearer {{TOKEN}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="audio"; filename="prueba.wav"
+Content-Type: audio/wav
+
+< ./prueba.wav
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="partitura"
+
+{ "notas": [{"tiempo": 0.5, "tipo": "golpe"}, {"tiempo": 1.0, "tipo": "golpe"}] }
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
 # ── HEALTH ─────────────────────────────────────────────────────
 
-### [10] Health check
+### [13] Health check
 GET http://localhost:8080/health

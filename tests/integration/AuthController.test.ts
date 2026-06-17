@@ -8,11 +8,11 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   fn: async (t) => {
-    // Configuración antes de todas las pruebas del grupo
+    // Se realiza la inicialización y configuración antes del inicio de todas las pruebas del grupo.
     server = await startTestServer();
     const baseUrl = server.baseUrl;
 
-    // Correo aleatorio para evitar conflictos en BD real
+    // Se genera una dirección de correo electrónico aleatoria con el fin de prevenir conflictos por duplicidad en la base de datos real.
     const randomEmail = `test.user.${Date.now()}@xoropower.app`;
     const validPassword = "securePassword123";
 
@@ -26,9 +26,9 @@ Deno.test({
         })
       });
       
-      // Si el email ya existía (poco probable por Date.now()), manejamos 400
+      // En caso de que la dirección de correo electrónico ya se encuentre registrada, se procesa el código de estado 400.
       if (res.status === 400 && (res.body as any).message.includes("ya está registrado")) {
-        // Omitir si casualmente existía
+        // Se omite la aserción si existió una coincidencia casual en los datos.
         return;
       }
       assertEquals(res.status, 201);
@@ -88,13 +88,13 @@ Deno.test({
         method: "POST"
       });
       
-      // El endpoint no requiere autenticación, retorna 200
+      // Este punto de acceso no requiere autenticación obligatoria y retorna un estado 200.
       assertEquals(res.status, 200);
       const body = res.body as any;
       assertEquals(body.success, true);
     });
 
-    // Limpieza
+    // Se procede con el cierre del servidor y la limpieza de los recursos del entorno.
     await server.close();
   }
 });

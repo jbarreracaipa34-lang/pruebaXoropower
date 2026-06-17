@@ -2,11 +2,11 @@ import { Context, z } from "../dependencies/dependencias.ts";
 import { ProgresoModel } from "../models/ProgresoModel.ts";
 
 const actualizarProgresoSchema = z.object({
-  id_ejercicio: z.string().uuid("El id_ejercicio debe ser un UUID válido."),
+  id_ejercicio: z.string().min(1, "El id_ejercicio es requerido."),
   puntuacion:   z.number().min(0).max(100, "La puntuación debe estar entre 0 y 100."),
 });
 
-// GET /api/progreso — Listar todo el progreso del usuario autenticado
+// Ruta GET /api/progreso: Recupera el listado completo de progresos del usuario autenticado.
 export const getProgreso = async (ctx: Context) => {
   const { response } = ctx;
   try {
@@ -29,7 +29,7 @@ export const getProgreso = async (ctx: Context) => {
   }
 };
 
-// GET /api/progreso/resumen — Resumen estadístico del usuario
+// Ruta GET /api/progreso/resumen: Obtiene el resumen estadístico de las actividades completadas y en progreso del usuario.
 export const getResumen = async (ctx: Context) => {
   const { response } = ctx;
   try {
@@ -52,7 +52,7 @@ export const getResumen = async (ctx: Context) => {
   }
 };
 
-// POST /api/progreso — Insertar o actualizar progreso
+// Ruta POST /api/progreso: Registra o actualiza el progreso obtenido por el usuario autenticado para un ejercicio específico.
 export const postProgreso = async (ctx: Context) => {
   const { response, request } = ctx;
   try {

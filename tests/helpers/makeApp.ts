@@ -1,8 +1,8 @@
 /**
- * makeApp.ts — Helper de testing
- * Construye la misma aplicación Oak que usa main.ts,
- * pero sin iniciar el listener, para poder pasarla
- * a un servidor de prueba efímero.
+ * makeApp.ts — Componente auxiliar de pruebas (testing)
+ * Construye la misma instancia de la aplicación Oak empleada en main.ts,
+ * omitiendo el inicio del listener con el fin de poder delegar la ejecución
+ * a un servidor de pruebas de puerto efímero.
  */
 import { Application, oakCors } from "../../dependencies/dependencias.ts";
 import { AuthRouter }    from "../../routes/AuthRouter.ts";
@@ -13,21 +13,21 @@ import { RitmoRouter }    from "../../routes/RitmoRouter.ts";
 export function makeApp(): Application {
   const app = new Application();
 
-  // CORS idéntico al de producción
+  // Configuración del mecanismo de CORS idéntica a la utilizada en producción.
   app.use(oakCors({
     origin:         "*",
     methods:        ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }));
 
-  // Routers
+  // Configuración y registro de los enrutadores (routers) disponibles en la aplicación.
   const routers = [AuthRouter, ModuloRouter, ProgresoRouter, RitmoRouter];
   routers.forEach((router) => {
     app.use(router.routes());
     app.use(router.allowedMethods());
   });
 
-  // Health + 404 fallback
+  // Manejo de la ruta de estado (health check) y controlador de respaldo para rutas no encontradas (404 fallback).
   app.use((ctx) => {
     if (ctx.request.url.pathname === "/health") {
       ctx.response.body = { status: "ok", service: "xoropower-api", version: "1.0.0" };

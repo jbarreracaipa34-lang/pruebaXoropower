@@ -1,9 +1,9 @@
 /**
- * testServer.ts — Helper de testing
- * Levanta la app Oak en un puerto efímero (aleatorio) y
- * devuelve la baseUrl + una función close() para limpieza.
+ * testServer.ts — Componente auxiliar para pruebas (testing)
+ * Se encarga de levantar la aplicación Oak en un puerto efímero (aleatorio) y
+ * retorna la dirección base (baseUrl) junto con una función de cierre (close) para la limpieza de recursos.
  *
- * Uso:
+ * Ejemplo de uso:
  *   const { baseUrl, close } = await startTestServer();
  *   // ... fetch(baseUrl + "/api/...")
  *   await close();
@@ -21,30 +21,30 @@ export async function startTestServer(
 ): Promise<TestServer> {
   const ac = new AbortController();
 
-  // Reserva un puerto libre del SO
+  // Se reserva un puerto de red disponible en el sistema operativo.
   const tmpListener = Deno.listen({ port: 0 });
   const port = (tmpListener.addr as Deno.NetAddr).port;
   tmpListener.close();
 
-  // Inicia el servidor en background (no await intencional)
+  // Se inicia el servidor en segundo plano de manera no bloqueante (omitiendo intencionalmente el await).
   const serverDone = app
     .listen({ port, signal: ac.signal })
-    .catch(() => { /* AbortError esperado al cerrar */ });
+    .catch(() => { /* Se captura el AbortError esperado al momento del cierre. */ });
 
-  // Pequeña pausa para que el servidor acepte conexiones
+  // Se realiza una breve pausa de espera para asegurar que el servidor esté en condiciones de aceptar conexiones.
   await new Promise<void>((r) => setTimeout(r, 80));
 
   return {
     baseUrl: `http://localhost:${port}`,
     close: async () => {
       ac.abort();
-      // await serverDone; // Comentado para evitar deadlocks con conexiones keep-alive de fetch
+      // Se mantiene comentado para prevenir bloqueos mutuos (deadlocks) con conexiones persistentes keep-alive de fetch.
     },
   };
 }
 
 /**
- * Helper: hace un fetch JSON y devuelve { status, body }
+ * Función auxiliar que realiza una petición fetch de tipo JSON y retorna el estado y el cuerpo de la respuesta.
  */
 export async function fetchJson(
   url: string,
@@ -53,7 +53,7 @@ export async function fetchJson(
   const res = await fetch(url, {
     headers: { 
       "Content-Type": "application/json", 
-      "Connection": "close", // Cierra el socket tras responder para no bloquear Oak
+      "Connection": "close", // Se define el cierre del socket tras la respuesta para evitar el bloqueo del framework Oak.
       ...(options?.headers ?? {}) 
     },
     ...options,

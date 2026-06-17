@@ -7,7 +7,7 @@ if (!connectionString) {
     const env = await load();
     connectionString = env["DATABASE_URL"];
   } catch (_e) {
-    // Env file not found, will use default
+    // No se encontró el archivo de entorno .env, por lo que se utilizarán los valores por defecto.
   }
 }
 
@@ -22,4 +22,4 @@ export const sql = postgres(connectionString, {
   },
 });
 
-console.log("✅ Conexión a PostgreSQL establecida correctamente.");
+console.log("Conexión a PostgreSQL establecida correctamente.");

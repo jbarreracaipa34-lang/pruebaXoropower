@@ -57,7 +57,7 @@ Deno.test({
     });
 
     await t.step("5. Obtener Detalle del Módulo y Sección Básico", async () => {
-      if (!primerModuloId) return; // Sin módulos en BD
+      if (!primerModuloId) return; // Se omite el paso si no existen módulos registrados en la base de datos.
 
       const resModulo = await fetchJson(`${baseUrl}/api/modulos/${primerModuloId}`, {
         headers: { "Authorization": `Bearer ${token}` }
@@ -68,7 +68,7 @@ Deno.test({
         headers: { "Authorization": `Bearer ${token}` }
       });
       
-      // Puede que no tenga nivel basico, aceptamos 200 o 404
+      // Se contempla la posibilidad de que no exista el nivel básico para el módulo seleccionado, por lo que se acepta una respuesta con estado 200 o 404.
       if (resSeccion.status === 200) {
         assertEquals((resSeccion.body as any).success, true);
       }

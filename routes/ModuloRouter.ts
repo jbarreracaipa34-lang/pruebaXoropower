@@ -8,10 +8,10 @@ import { authMiddleware } from "../middleware/AuthMiddleware.ts";
 
 const ModuloRouter = new Router();
 
-// Pública: la lista de módulos se muestra en el Home sin autenticar
+// Ruta pública: se permite la obtención del listado de módulos sin requerir autenticación para mostrarse en la pantalla de inicio.
 ModuloRouter.get("/api/modulos", getModulos);
 
-// Protegidas: detalle y sección requieren JWT
+// Rutas protegidas: la consulta de detalles de un módulo y la sección por nivel requieren la verificación de un token JWT válido.
 ModuloRouter.get("/api/modulos/:identificador", authMiddleware, getModuloPorIdentificador);
 ModuloRouter.get("/api/modulos/:identificador/seleccionador/:nivel",authMiddleware, getSeccionPorNivel);
 

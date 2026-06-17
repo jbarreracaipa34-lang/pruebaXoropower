@@ -7,6 +7,7 @@ export interface UsuarioData {
   nombreUsuario: string;
   passwordHash?: string;
   avatar?: string;
+  rol?: string;
 }
 
 export class UsuarioModel {
@@ -22,14 +23,15 @@ export class UsuarioModel {
     }
     const { email } = this._ObjUsuario;
 
-    // Intentamos traer el avatar de la tabla avatares si existe uno con el mismo nombre de usuario
-    // Si no, devolvemos el vaquero por defecto 🤠
+    // Se intenta recuperar el avatar de la tabla avatares si existe un registro asociado al nombre de usuario.
+    // Si no existe, se retorna el vaquero por defecto 🤠.
     const [usuario] = await sql`
       SELECT 
         u.id_usuario as "idUsuario",
         u.email, 
         u.nombre_usuario as "nombreUsuario",
         u.password_hash as "passwordHash",
+        u.rol,
         COALESCE(a.url_imagen, '🤠') as avatar
       FROM usuarios u
       LEFT JOIN avatares a ON u.nombre_usuario = a.nombre
@@ -49,11 +51,11 @@ export class UsuarioModel {
       const [usuario] = await sql`
         INSERT INTO usuarios (nombre_usuario, email, password_hash, timestamp_ultimo_acceso)
         VALUES (${nombreUsuario}, ${email}, ${passwordHash}, NOW())
-        RETURNING id_usuario as "idUsuario", nombre_usuario as "nombreUsuario", email
+        RETURNING id_usuario as "idUsuario", nombre_usuario as "nombreUsuario", email, rol
       `;
 
       if (usuario) {
-        // Creamos también el registro en avatares para que tenga su emoji
+        // Se crea el registro correspondiente en la tabla avatares para asociar la imagen por defecto.
         await sql`
           INSERT INTO avatares (nombre, url_imagen)
           VALUES (${nombreUsuario}, '🤠')
@@ -87,5 +89,30 @@ export class UsuarioModel {
     } catch (error) {
       console.error("Error al actualizar ultimo acceso:", error);
     }
+  }
+
+  /** Asigna un rol a un usuario existente identificado por email. */
+  public async AsignarRolPorEmail(
+    email: string,
+    rol: "admin" | "estudiante"
+  ): Promise<{ success: boolean; message: string; usuario?: UsuarioData }> {
+    const [usuario] = await sql`
+      UPDATE usuarios
+      SET rol = ${rol}
+      WHERE email = ${email}
+      RETURNING id_usuario as "idUsuario", nombre_usuario as "nombreUsuario", email, rol
+    `;
+
+    if (!usuario) {
+      return { success: false, message: "No existe un usuario con ese correo." };
+    }
+
+    return {
+      success: true,
+      message: rol === "admin"
+        ? "Usuario promovido a administrador."
+        : "Usuario actualizado a estudiante.",
+      usuario: usuario as unknown as UsuarioData,
+    };
   }
 }

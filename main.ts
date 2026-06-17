@@ -3,6 +3,7 @@ import { AuthRouter }    from "./routes/AuthRouter.ts";
 import { ModuloRouter }  from "./routes/ModuloRouter.ts";
 import { ProgresoRouter } from "./routes/ProgresoRouter.ts";
 import { RitmoRouter }    from "./routes/RitmoRouter.ts";
+import { GamificacionRouter } from "./routes/GamificacionRouter.ts";
 
 const PORT = Number(Deno.env.get("PORT") ?? 8080);
 
@@ -16,7 +17,7 @@ app.use(oakCors({
 }));
 
 // ── Routers ───────────────────────────────────────────────────
-const routers = [AuthRouter, ModuloRouter, ProgresoRouter, RitmoRouter];
+const routers = [AuthRouter, ModuloRouter, ProgresoRouter, RitmoRouter, GamificacionRouter];
 
 routers.forEach(router => {
   app.use(router.routes());

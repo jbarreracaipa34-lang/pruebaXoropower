@@ -57,7 +57,7 @@ Deno.test({
 
     await t.step("ActualizarUltimoAcceso - No lanza error", async () => {
       const model = new UsuarioModel();
-      // Simply asserting it resolves without error
+      // Se verifica de forma directa que el método se resuelva sin lanzar excepciones.
       await model.ActualizarUltimoAcceso(userId);
     });
   }

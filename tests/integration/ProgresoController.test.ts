@@ -23,7 +23,7 @@ Deno.test({
       false,
       ["sign"]
     );
-    // Usamos un UUID ficticio para el test user
+    // Se utiliza un identificador UUID ficticio para representar al usuario de prueba.
     const userId = "123e4567-e89b-12d3-a456-426614174000";
     validToken = await create(
       { alg: "HS256", typ: "JWT" },
@@ -61,7 +61,7 @@ Deno.test({
     });
 
     await t.step("POST /api/progreso - Actualizar progreso (valido)", async () => {
-      // Usamos un UUID ficticio para un ejercicio
+      // Se utiliza un identificador UUID ficticio para representar el ejercicio.
       const exerciseId = "123e4567-e89b-12d3-a456-426614174001";
       
       const res = await fetchJson(`${baseUrl}/api/progreso`, {
@@ -73,14 +73,14 @@ Deno.test({
         })
       });
       
-      // Puede fallar si existen constraints de foreign key estrictos en la BD real,
-      // pero si funciona la ruta debe devolver algo estructurado.
-      // Toleramos 500 si falla la FK, o 200 si inserta.
+      // Se contempla la posibilidad de fallo en caso de existir restricciones estrictas de clave foránea en la base de datos real.
+      // Si la ruta opera correctamente, se espera que retorne una estructura válida.
+      // Se admite un estado 500 en caso de fallo de clave foránea, o 200 ante una inserción exitosa.
       if (res.status === 200) {
         const body = res.body as any;
         assertEquals(body.success, true);
       } else {
-        // Error esperado si no existe el id_usuario o id_ejercicio en la BD real
+        // Se espera recibir un error si el id_usuario o id_ejercicio no existen en la base de datos real.
         const body = res.body as any;
         assertEquals(body.success, false);
       }
@@ -94,7 +94,7 @@ Deno.test({
         headers: { "Authorization": `Bearer ${validToken}` },
         body: JSON.stringify({
           id_ejercicio: exerciseId,
-          puntuacion: 150 // Inválido por Zod
+          puntuacion: 150 // Valor inválido según las restricciones definidas por Zod.
         })
       });
       
