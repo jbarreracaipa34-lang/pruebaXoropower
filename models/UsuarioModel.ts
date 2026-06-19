@@ -56,11 +56,16 @@ export class UsuarioModel {
 
       if (usuario) {
         // Se crea el registro correspondiente en la tabla avatares para asociar la imagen por defecto.
-        await sql`
-          INSERT INTO avatares (nombre, url_imagen)
-          VALUES (${nombreUsuario}, '🤠')
-          ON CONFLICT (nombre) DO NOTHING
-        `;
+        // Si falla, no afecta el registro del usuario.
+        try {
+          await sql`
+            INSERT INTO avatares (nombre, url_imagen)
+            VALUES (${nombreUsuario}, '🤠')
+            ON CONFLICT (nombre) DO NOTHING
+          `;
+        } catch (avatarError: any) {
+          console.warn("No se pudo crear el avatar por defecto:", avatarError.message);
+        }
         
         return {
           success: true,
