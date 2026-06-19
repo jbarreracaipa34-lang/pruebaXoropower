@@ -47,10 +47,11 @@ export class UsuarioModel {
       const { email, nombreUsuario } = this._ObjUsuario!;
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(password, salt);
+      const idUsuario = crypto.randomUUID();
 
       const [usuario] = await sql`
-        INSERT INTO usuarios (nombre_usuario, email, password_hash, timestamp_ultimo_acceso)
-        VALUES (${nombreUsuario}, ${email}, ${passwordHash}, NOW())
+        INSERT INTO usuarios (id_usuario, nombre_usuario, email, password_hash, timestamp_ultimo_acceso)
+        VALUES (${idUsuario}, ${nombreUsuario}, ${email}, ${passwordHash}, NOW())
         RETURNING id_usuario as "idUsuario", nombre_usuario as "nombreUsuario", email, rol
       `;
 
